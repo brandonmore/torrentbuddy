@@ -1,38 +1,59 @@
+html, body {
+  padding: 0;
+  margin: 0;
+}
 .App {
-  text-align: center;
+  text-align:center;
 }
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+form {
+  margin-bottom:30px;
 }
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.movieList {
+    max-width:50%;
+    margin:00 auto;
 }
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.movieList li {
+  display:flex;
+  text-align:left;
+  padding: 15px;
+  border-bottom: 1px solid #f3f3f3;
 }
-
-.App-link {
-  color: #61dafb;
+.movieList li:last-child {
+  border-bottom: 0 solid;
 }
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.movieList li img {
+  max-width:120px;
+  margin-right:10px;
+}
+.movieList li h3 {
+  margin-bottom:10px;
+}
+.movieList li h4 {
+  margin:5px 0 20px 0;
+}
+.movieQueue {
+  position:fixed;
+  top:20px;
+  right:20px;
+  min-width:300px;
+  max-height:90%;
+  overflow:auto;
+}
+.torrentButton {
+  background-color: #66ccff;
+  border-radius: 3px;
+  padding: 2px 5px;
+  margin-right:5px;
+  color:#fff;
+  display:inline-block;
+  text-decoration:none;
+  text-align:center;
+}
+.torrentButton span {
+  font-size: .7em;
+  display:block;
+  color:#cceeff;
+}
+.torrentButton:hover {
+  background-color:#1ab2ff;
 }

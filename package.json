@@ -6,12 +6,18 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "express": "^4.17.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "3.4.3"
+    "react-scripts": "3.4.3",
+    "webtorrent": "^0.108.6",
+    "ws": "^7.3.1"
   },
   "scripts": {
     "start": "react-scripts start",
+    "start-server-silent": "nohup node src/server.js&",
+    "start-all": "yarn run start-server-silent && yarn run start",
+    "start-server": "node src/server.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -30,5 +36,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "proxy": "http://localhost:3080"
 }
