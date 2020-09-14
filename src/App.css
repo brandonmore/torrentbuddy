@@ -39,6 +39,24 @@ form {
   max-height:90%;
   overflow:auto;
 }
+.movieQueue li {
+  display:flex;
+  text-align:left;
+  margin-bottom:10px;
+}
+.movieQueue li img {
+  max-height:60px;
+  margin-right:5px;
+}
+.movieQueue li h5 {
+  font-size:14px;
+  font-weight:bold;
+  margin: 0 0 5px 0;
+}
+.movieQueue li span {
+  font-size: 12px;
+  display:block;
+}
 .torrentButton {
   background-color: #66ccff;
   border-radius: 3px;

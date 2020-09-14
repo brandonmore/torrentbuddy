@@ -14,10 +14,6 @@ socket.addEventListener('open', function (event) {
     socket.send('Hello Server!');
 });
 
-// socket.addEventListener('message', function (event) {
-//     console.log('Message from server ', event.data);
-// });
-
 const getFakeStatus = () =>{
   return Math.random()*1000
 }
@@ -25,10 +21,8 @@ const getFakeStatus = () =>{
 const getTorrent = async (torrent, torrentTitle) => {
   const torrentUrl = encodeURIComponent(torrent.url)
   const title = encodeURIComponent(torrentTitle)
-  console.log(title)
   const response = await fetch(`/download?url=${torrentUrl}&title=${title}`)
   const json = await response.json()
-  console.log(json)
 }
 
 const SearchForm = props => {
@@ -42,7 +36,6 @@ const SearchForm = props => {
   const handleSubmit = async (event) => {
     event.preventDefault()
     const torrents = await searchTorrents(value)
-    console.log(torrents.movies)
     callback(torrents.movies)
   }
 
@@ -54,10 +47,15 @@ const SearchForm = props => {
   )
 }
 
+const formatTime = (num) => {
+  const minutes = Math.floor(num)
+  const seconds = Math.floor((num - minutes) * 60)
+  return minutes + ' min' + ' ' + seconds + ' seconds'
+}
+
 const MovieQueue = props =>{
   const {movieQueue} = props
-  console.log('render queue')
-  console.log({queue: movieQueue})
+
   return (
     <ul className="movieQueue">
       {movieQueue.map((item,index)=>(
@@ -66,7 +64,7 @@ const MovieQueue = props =>{
           <div>
             <h5>{item.title}</h5>
             <span>{item.type}: {item.quality}</span>
-            <span>time: {item.time || 0} status: {item.status||'downloading'}</span>
+            <span>time: {formatTime(item.time) || 0} status: {item.status||'downloading'}</span>
           </div>
         </li>
       ))}
@@ -77,33 +75,29 @@ const MovieQueue = props =>{
 const useMovieQueue = () => {
   const [movieQueue, setMovieQueue] = useState([])
   const addMovieToQueue = (movie)=>{
-    console.log('adding movie')
+    const duplicate = movieQueue.find(item => item.hash === movie.hash)
+    if(duplicate) return
     const newMovies = [...movieQueue, movie]
+    getTorrent(movie, movie.title)
     setMovieQueue(newMovies)
-    console.log(movieQueue) 
   }
   const updateStatus = (event) => {
     const data = event.data
-    console.log(data)
-    console.log(typeof data)
-    console.log({data: JSON.parse(data)})
     if(!movieQueue.length) return
-    const {hash, time} = JSON.parse(data)
+    const {hash, time, status} = JSON.parse(data)
+    const queueCopy = [...movieQueue]
     for(let i =0;i<movieQueue.length;i++){
-      console.log({localHash: movieQueue[i].hash, hash: hash.toString().toUpperCase()})
       if(hash && movieQueue[i].hash === hash.toString().toUpperCase()){
-        console.log({time: movieQueue[i].time})
-        const queueCopy = [...movieQueue]
         queueCopy[i].time = time
-        setMovieQueue(queueCopy)
-        console.log({time2: movieQueue[i].time})
+        queueCopy[i].status = status
         break
-
       }
     }
+    const queueDownloading = queueCopy.filter(item => item.status !== 'failed')
+    setMovieQueue(queueDownloading)
+
   }
   useEffect(()=>{
-    console.log('effect')
     socket.addEventListener('message', updateStatus);
     return ()=>{
       socket.removeEventListener('message', updateStatus)
@@ -118,10 +112,8 @@ const MovieList = props => {
   const {addMovieToQueue} = useMovieQueue()
   const handleClick = (event, item, torrent) => {
     event.preventDefault()
-    console.log({torrent: torrent})
-    const torrentItem = {...torrent, title: item.title, image: item.small_cover_image, time: 100}
+    const torrentItem = {...torrent, title: item.title, image: item.small_cover_image, time: 1000, status: 'initializing'}
     callback(torrentItem)
-    getTorrent(torrent, item.title)
   }
   
   const Movie = props => {
@@ -157,7 +149,6 @@ const MovieList = props => {
 function App() {
   const [movies, setMovies] = useState([])
   const {addMovieToQueue, movieQueue} = useMovieQueue()
-  console.log(movieQueue)
   return (
     <div className="App">
       <h1>Torrent Friend!</h1>

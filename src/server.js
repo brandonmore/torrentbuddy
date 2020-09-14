@@ -66,6 +66,10 @@ wsServer.on('connection', socket => {
   wsSocket = socket
 });
 
+const timeFormatted = (time) => {
+  
+}
+
 const findMp4File = (fileNames) =>{
   const mp4Files = fileNames.filter((file)=> {
     return /.mp4/.test(file.path)
@@ -89,19 +93,19 @@ app.get('/download', (req,res)=>{
     console.log('client error')
     console.log(err)
   })
-  client.add(url, {path: '../temp', maxWebConns: 20}, (torrent)=>{
+  client.add(url, {path: '../temp', maxWebConns: 30}, (torrent)=>{
     let failed = 0;
-    console.log(torrent)
     const int = setInterval(()=>{
       const time = torrent.timeRemaining/1000/60
       console.log(title + ': ' + time)
       if(wsSocket)
-        wsSocket.send(`{"hash":"${torrent.infoHash}","time":"${time}"}`)
+        wsSocket.send(`{"hash":"${torrent.infoHash}","time":"${time}", "status":"downloading"}`)
       if(torrent.timeRemaining == Infinity)
         failed++;
-      if(failed > 5){
+      if(failed > 10){
         clearInterval(int)
         client.remove(torrent)
+        wsSocket.send(`{"hash":"${torrent.infoHash}","time":"Infinity", "status":"failed"}`)
         console.log('failed: no seeds')
         return;
       }
@@ -129,7 +133,7 @@ app.get('/download', (req,res)=>{
         }else{
           console.log('moved')
           if(wsSocket)
-            wsSocket.send(`{"hash":"${torrent.infoHash}","time":"0"}`)
+            wsSocket.send(`{"hash":"${torrent.infoHash}","time":"0", "status": "done"}`)
 
         }
       })
